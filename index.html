@@ -1,0 +1,38 @@
+<html>
+<head>
+<title>
+Blocks engine.
+</title>
+<body>
+<script type="text/javascript">
+////////////////////
+// constants
+////////////////////
+ROWS = 10;
+COLUMNS = 10;
+
+(function (ROWS, COLUMNS) {
+	function coords_to_text(i, j) {
+		return i + "_" + j;
+	}
+
+
+	////////////////////
+	// DOM
+	////////////////////
+	var table = document.createElement("table");
+	table.setAttribute("id", canvas);
+	for (var i = 0; i < ROWS; i++) {
+	var tr = document.createElement("tr");
+	for ( var j = 0; j < COLUMNS; j++) {
+		var td = document.createElement("td");
+		td.setAttribute("id", coords_to_text(i,j));
+		tr.appendChild(td);
+	}
+	table.appendChild(tr);
+	}
+	document.body.appendChild(table);
+}(ROWS, COLUMNS));
+</script>
+</body>
+</html>

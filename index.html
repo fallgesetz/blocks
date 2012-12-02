@@ -18,6 +18,7 @@
 	border: 1px solid black;
 }
 </style>
+<script src="set.js" />
 <title>
 Blocks engine.
 </title>
@@ -30,11 +31,11 @@ ROWS = 10;
 COLUMNS = 10;
 PALETTE = ["#EA3556", "#61D2D6", "#EDE5E2", "#ED146F", "#EDDE45", "#9BF0E9"];
 
-////////////////////
 // module pattern
-////////////////////
-
 (function (ROWS, COLUMNS, PALETTE) {
+	////////////////////
+	// View
+	////////////////////
 	var COLOR_STATE;
 	function coords(i, j) {
 		this.getText = function () {
@@ -56,9 +57,6 @@ PALETTE = ["#EA3556", "#61D2D6", "#EDE5E2", "#ED146F", "#EDDE45", "#9BF0E9"];
 		return COLOR_STATE;
 	}
 
-	////////////////////
-	// DOM
-	////////////////////
 	var table = document.createElement("table");
 	table.setAttribute("id", "canvas");
 	for (var i = 0; i < ROWS; i++) {
@@ -97,7 +95,42 @@ PALETTE = ["#EA3556", "#61D2D6", "#EDE5E2", "#ED146F", "#EDDE45", "#9BF0E9"];
 	palette.appendChild(tr);
 	document.body.appendChild(palette);
 
-	(new coords(3,4)).setColor("black");
+        ////////////////////
+	// Model
+        ////////////////////
+
+	// Map a drawing to something happening.
+	var actions = new function() {
+		this.map = {}
+		this.appendAction = function (drawing, result) {
+			if (drawing in this.map) {
+				this.map[drawing][result] = 1;
+			}
+		};
+
+		this.delAction = function (drawing, result) {
+			for (res in this.map[drawing]) {
+				if (res == result) {
+					delete this.map[drawing][result];
+				}
+			}
+		};
+
+		// returns an anonymous function that you can execute to get the desired result.
+		this.kickOff = function (table_state) {
+			return function() {
+				for (drawing in this.map) {
+					if (drawing.matches(table_state)) {
+						this.map[drawing].forEach(function(x) {
+							(x);
+						});
+					}
+				}
+			}
+		}
+		}
+	};
+
 }(ROWS, COLUMNS, PALETTE));
 </script>
 </body>

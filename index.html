@@ -1,5 +1,23 @@
 <html>
 <head>
+<style type="text/css">
+#canvas {
+	background-color: white;
+	border: 1px solid black;
+}
+
+#canvas td {
+	width: 30px;
+	height: 30px;
+	border: 1px solid black;
+}
+
+#palette td {
+	width: 30px;
+	height: 30px;
+	border: 1px solid black;
+}
+</style>
 <title>
 Blocks engine.
 </title>
@@ -10,29 +28,77 @@ Blocks engine.
 ////////////////////
 ROWS = 10;
 COLUMNS = 10;
+PALETTE = ["#EA3556", "#61D2D6", "#EDE5E2", "#ED146F", "#EDDE45", "#9BF0E9"];
 
-(function (ROWS, COLUMNS) {
-	function coords_to_text(i, j) {
-		return i + "_" + j;
+////////////////////
+// module pattern
+////////////////////
+
+(function (ROWS, COLUMNS, PALETTE) {
+	var COLOR_STATE;
+	function coords(i, j) {
+		this.getText = function () {
+			return i + "_" + j;
+		}
+		this.setColor = function (hexcode) {
+			var elm = document.getElementById(this.getText(i,j));
+			elm.setAttribute("style", "background-color: " + hexcode);
+		}
+
 	}
 
+	function setGlobalColorState(hexcode) {
+		COLOR_STATE = hexcode;
+	}
+
+	
+	function getGlobalColorState(hexcode) {
+		return COLOR_STATE;
+	}
 
 	////////////////////
 	// DOM
 	////////////////////
 	var table = document.createElement("table");
-	table.setAttribute("id", canvas);
+	table.setAttribute("id", "canvas");
 	for (var i = 0; i < ROWS; i++) {
 	var tr = document.createElement("tr");
 	for ( var j = 0; j < COLUMNS; j++) {
 		var td = document.createElement("td");
-		td.setAttribute("id", coords_to_text(i,j));
+		td.setAttribute("id", (new coords(i,j)).getText());
+		td.addEventListener("click", (function (i,j) {
+			return function() {
+				console.log(getGlobalColorState());
+				(new coords(i, j)).setColor(getGlobalColorState());
+			}
+		}(i,j))
+		);
 		tr.appendChild(td);
 	}
 	table.appendChild(tr);
 	}
 	document.body.appendChild(table);
-}(ROWS, COLUMNS));
+
+	var palette = document.createElement("table");
+	palette.setAttribute("id", "palette");
+	var tr = document.createElement("tr");
+	for (var i = 0; i < PALETTE.length; i++) {
+		var td = document.createElement("td");
+		td.setAttribute("color", PALETTE[i]);
+		td.setAttribute("style", "background-color: " + PALETTE[i]);
+		td.setAttribute("id", "color_" + i);
+		td.addEventListener("click", (function (i) {
+			return function() {
+				setGlobalColorState(PALETTE[i]);
+			}
+		}(i)));
+		tr.appendChild(td);
+	}
+	palette.appendChild(tr);
+	document.body.appendChild(palette);
+
+	(new coords(3,4)).setColor("black");
+}(ROWS, COLUMNS, PALETTE));
 </script>
 </body>
 </html>

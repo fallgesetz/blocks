@@ -26,7 +26,6 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 					var color = color_obj[1];
 					if (color === hexcode) {
 						elm.setAttribute("style", "");
-						console.log(elm);
 						return;
 					}
 				}
@@ -87,10 +86,13 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 	// Map a drawing to something happening.
 	var actions = new function() {
 		this.map = {}
+		// there's some sort of restriction on what an attribute of an object is
+		// drawing can't be an attribute...
 		this.appendAction = function (drawing, result) {
-			if (drawing in this.map) {
-				this.map[drawing][result] = 1;
+			if (!(drawing in this.map)) {
+			   this.map[drawing] = {};
 			}
+			this.map[drawing][result] = 1;
 		};
 
 		this.delAction = function (drawing, result) {
@@ -117,16 +119,17 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 		// returns an anonymous function that you can execute to get the desired result.
 		this.kickOff = function () {
 			var table_state = this.getTableState();
+			var that = this;
 			return function() {
-				console.log(table_state.map);
-				for (drawing in this.map) {
+				for (drawing in that.map) {
+					console.log(table_state);
 					if (drawing.matches(table_state)) {
-						this.map[drawing].forEach(function(x) {
+						that.map[drawing].forEach(function(x) {
 							(x);
 						});
 					}
 				}
-			}
+			};
 		}
 	};
 	return {

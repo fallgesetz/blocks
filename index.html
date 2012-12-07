@@ -19,11 +19,12 @@
 	border: 1px solid black;
 }
 </style>
-<script src="set.js"></script>
+<script src="drawing.js"></script>
 <script src="blocks.js"></script>
 <title>
 Blocks engine.
 </title>
+</head>
 <body>
 <script type="text/javascript">
 ////////////////////
@@ -34,7 +35,17 @@ COLUMNS = 3;
 PALETTE = ["#EA3556", "#61D2D6", "#EDE5E2", "#ED146F", "#EDDE45", "#9BF0E9"];
 var blocks = new blocks(ROWS, COLUMNS, PALETTE);
 
-// there are more and less complex ways of defining drawings, which way should I use?
+drawing = new Drawing([[0,0], [0,1], [0,2], [1,1], [1,2]]);
+result = function() {
+	alert("you win!");
+}
+blocks.actions.appendAction(drawing, result);
+document.body.addEventListener("click", function() {
+	var foo = blocks.actions.kickOff();
+	// TODO: how do you execute a function returned from javascript?
+
+});
+
 </script>
 </body>
 </html>

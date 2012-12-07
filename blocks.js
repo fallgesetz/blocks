@@ -3,13 +3,35 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 	// View
 	////////////////////
 	var COLOR_STATE;
+	var BG_COLOR_REGEXP = /^background-color: (\#[0-9A-F]{6})/g;
+
 	function coords(i, j) {
 		this.getText = function () {
 			return i + "_" + j;
 		}
-		this.setColor = function (hexcode) {
+		this.getDomElm = function() {
 			var elm = document.getElementById(this.getText(i,j));
+			return elm;
+		}
+		this.setColor = function (hexcode) {
+			elm = this.getDomElm();
 			elm.setAttribute("style", "background-color: " + hexcode);
+		}
+		this.toggleColor = function (hexcode) {
+			elm = this.getDomElm();
+			if ( elm.hasAttribute("style")) {
+				var attr = elm.getAttribute("style");
+				var color_obj = BG_COLOR_REGEXP.exec(attr);
+				if (color_obj) {
+					var color = color_obj[1];
+					if (color === hexcode) {
+						elm.setAttribute("style", "");
+						console.log(elm);
+						return;
+					}
+				}
+			}
+			this.setColor(hexcode);
 		}
 
 	}
@@ -32,8 +54,7 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 		td.setAttribute("id", (new coords(i,j)).getText());
 		td.addEventListener("click", (function (i,j) {
 			return function() {
-				console.log(getGlobalColorState());
-				(new coords(i, j)).setColor(getGlobalColorState());
+				(new coords(i, j)).toggleColor(getGlobalColorState());
 			}
 		}(i,j))
 		);
@@ -48,9 +69,7 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 	var tr = document.createElement("tr");
 	for (var i = 0; i < PALETTE.length; i++) {
 		var td = document.createElement("td");
-		td.setAttribute("color", PALETTE[i]);
 		td.setAttribute("style", "background-color: " + PALETTE[i]);
-		td.setAttribute("id", "color_" + i);
 		td.addEventListener("click", (function (i) {
 			return function() {
 				setGlobalColorState(PALETTE[i]);
@@ -82,9 +101,24 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 			}
 		};
 
+		this.getTableState = function() {
+			table = new Drawing();
+			for (var i = 0; i < ROWS; i++) {
+				for ( var j = 0; j < COLUMNS; j++) {
+					var td = document.getElementById((new coords(i,j)).getText());
+					if (td.hasAttribute("style")) {
+						table.add([i,j]);
+					}
+				}
+			}
+			return table;
+		}
+
 		// returns an anonymous function that you can execute to get the desired result.
-		this.kickOff = function (table_state) {
+		this.kickOff = function () {
+			var table_state = this.getTableState();
 			return function() {
+				console.log(table_state.map);
 				for (drawing in this.map) {
 					if (drawing.matches(table_state)) {
 						this.map[drawing].forEach(function(x) {
@@ -94,5 +128,8 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 				}
 			}
 		}
+	};
+	return {
+		actions: actions
 	};
 };

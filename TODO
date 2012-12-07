@@ -1,0 +1,3 @@
+Refactoring things to think about:
+
+The blocks.js file is obviously too big and DOM manipulation is injected everywhere. There should be a way to separate DOM from actual logic.

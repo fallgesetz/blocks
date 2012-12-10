@@ -85,22 +85,25 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 
 	// Map a drawing to something happening.
 	var actions = new function() {
-		this.map = {}
+		this.action_list = new Array();
 		// there's some sort of restriction on what an attribute of an object is
 		// drawing can't be an attribute...
 		this.appendAction = function (drawing, result) {
-			if (!(drawing in this.map)) {
-			   this.map[drawing] = {};
-			}
-			this.map[drawing][result] = 1;
+			action = new Action(drawing, result);
+			// TODO: duplicates
+			this.action_list.push(action);
 		};
 
 		this.delAction = function (drawing, result) {
-			for (res in this.map[drawing]) {
-				if (res == result) {
-					delete this.map[drawing][result];
+			var action = new Action(drawing, result);
+			var new_list = new Array();
+			for (var i = 0; i < this.action_list.length; i++) {
+				var i_action = this.action_list[i];
+				if (!action.equals(i_action)) {
+					new_list.push(i_action);
 				}
 			}
+			this.action_list = new_list;
 		};
 
 		this.getTableState = function() {
@@ -108,11 +111,14 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 			for (var i = 0; i < ROWS; i++) {
 				for ( var j = 0; j < COLUMNS; j++) {
 					var td = document.getElementById((new coords(i,j)).getText());
-					if (td.hasAttribute("style")) {
+					// TODO: hacky, learn js and fix
+					if (td.getAttribute("style") != null && 
+					    td.getAttribute("style") != "") {
 						table.add([i,j]);
 					}
 				}
 			}
+console.log(table);
 			return table;
 		}
 
@@ -121,12 +127,11 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 			var table_state = this.getTableState();
 			var that = this;
 			return function() {
-				for (drawing in that.map) {
-					console.log(table_state);
+				for (var i = 0; i < that.action_list.length; i++) {
+					var drawing = that.action_list[i].drawing;
+					var result = that.action_list[i].result;
 					if (drawing.matches(table_state)) {
-						that.map[drawing].forEach(function(x) {
-							(x);
-						});
+						result();
 					}
 				}
 			};

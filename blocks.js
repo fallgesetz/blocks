@@ -3,7 +3,7 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 	// View
 	////////////////////
 	var COLOR_STATE;
-	var BG_COLOR_REGEXP = /^background-color: (\#[0-9A-F]{6})/g;
+	var BG_COLOR_REGEXP = /^background-color: (\#[0-9A-F]{6})/i;
 
 	function coords(i, j) {
 		this.getText = function () {
@@ -39,7 +39,6 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 		COLOR_STATE = hexcode;
 	}
 
-	
 	function getGlobalColorState(hexcode) {
 		return COLOR_STATE;
 	}
@@ -106,8 +105,10 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 			this.action_list = new_list;
 		};
 
+		// TODO: the following four functions are shit
+		// Possible Solution: figure out inheritance in javascript
 		this.getTableState = function() {
-			table = new Drawing();
+			var table = new Drawing();
 			for (var i = 0; i < ROWS; i++) {
 				for ( var j = 0; j < COLUMNS; j++) {
 					var td = document.getElementById((new coords(i,j)).getText());
@@ -118,7 +119,24 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 					}
 				}
 			}
-console.log(table);
+			return table;
+		}
+
+		this.getTableStateWithColor = function() {
+			var table = new Drawing();
+			for (var i = 0; i < ROWS; i++) {
+				for ( var j = 0; j < COLUMNS; j++) {
+					var td = document.getElementById((new coords(i,j)).getText());
+					var attr = td.getAttribute("style");
+					// TODO: hacky, learn js and fix
+					if (attr != null && 
+					    attr != "") {
+						var color_obj = BG_COLOR_REGEXP.exec(attr);
+						var color = color_obj[1];
+						table.add([i,j, color]);
+					}
+				}
+			}
 			return table;
 		}
 
@@ -136,7 +154,22 @@ console.log(table);
 				}
 			};
 		}
+
+		this.kickOffWithColor = function () {
+			var table_state = this.getTableStateWithColor();
+			var that = this;
+			return function() {
+				for (var i = 0; i < that.action_list.length; i++) {
+					var drawing = that.action_list[i].drawing;
+					var result = that.action_list[i].result;
+					if (drawing.matches(table_state)) {
+						result();
+					}
+				}
+			};
+		}
 	};
+
 	return {
 		actions: actions
 	};

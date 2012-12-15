@@ -1,24 +1,10 @@
 <!DOCTYPE html>
+<!--
+Template for all the levels
+-->
 <html>
 <head>
-<style type="text/css">
-#canvas {
-	background-color: white;
-	border: 1px solid black;
-}
-
-#canvas td {
-	width: 30px;
-	height: 30px;
-	border: 1px solid black;
-}
-
-#palette td {
-	width: 30px;
-	height: 30px;
-	border: 1px solid black;
-}
-</style>
+<link rel="stylesheet" href="style/main.css"/>
 <script src="action.js"></script>
 <script src="drawing.js"></script>
 <script src="blocks.js"></script>
@@ -36,13 +22,17 @@ COLUMNS = 3;
 PALETTE = ["#EA3556", "#61D2D6", "#EDE5E2", "#ED146F", "#EDDE45", "#9BF0E9"];
 var blocks = new blocks(ROWS, COLUMNS, PALETTE);
 
-drawing = new Drawing([[0,0], [0,1], [0,2], [1,1], [1,2]]);
+drawing = new Drawing([[0,0,"#61D2D6"],
+		       [0,1,"#61D2D6"],
+		       [0,2,"#61D2D6"],
+		       [1,1,"#61D2D6"],
+		       [1,2,"#61D2D6"]]);
 result = function() {
 	alert("you win!");
 }
 blocks.actions.appendAction(drawing, result);
 document.body.addEventListener("click", function() {
-	var foo = blocks.actions.kickOff();
+	var foo = blocks.actions.kickOffWithColor();
 	// TODO: how do you execute a function returned from javascript?
 	foo();
 });

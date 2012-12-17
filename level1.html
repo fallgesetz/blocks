@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+Template for all the levels
+-->
+<html>
+<head>
+<link rel="stylesheet" href="style/main.css"/>
+<script src="action.js"></script>
+<script src="drawing.js"></script>
+<script src="blocks.js"></script>
+<title>
+Blocks engine.
+</title>
+</head>
+<body>
+<script type="text/javascript">
+////////////////////
+// constants
+////////////////////
+ROWS = 6;
+COLUMNS = 6;
+PALETTE = ["brown", "yellow"];
+var blocks = new blocks(ROWS, COLUMNS, PALETTE);
+
+drawing = new Drawing([
+	[0,1, "brown"],
+	[0,2, "brown"],
+	[0,3, "brown"],
+	[0,4, "brown"],
+	[1,1, "brown"],
+	[1,2, "brown"],
+	[1,3, "brown"],
+	[1,4, "brown"],
+	[2,1, "brown"],
+	[2,2, "brown"],
+	[2,3, "brown"],
+	[2,4, "brown"],
+	[3,1, "brown"],
+	[3,2, "brown"],
+	[3,3, "yellow"],
+	[3,4, "brown"],
+	[4,1, "brown"],
+	[4,2, "brown"],
+	[4,3, "brown"],
+	[4,4, "brown"],
+	[5,1, "brown"],
+	[5,2, "brown"],
+	[5,3, "brown"],
+	[5,4, "brown"]
+]);
+
+result = function() {
+	alert("you win!");
+}
+blocks.actions.appendAction(drawing, result);
+document.body.addEventListener("click", function() {
+	var foo = blocks.actions.kickOffWithColor();
+	// TODO: how do you execute a function returned from javascript?
+	foo();
+});
+
+</script>
+</body>
+</html>

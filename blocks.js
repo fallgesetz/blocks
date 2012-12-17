@@ -3,7 +3,23 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 	// View
 	////////////////////
 	var COLOR_STATE;
-	var BG_COLOR_REGEXP = /^background-color: (\#[0-9A-F]{6})/i;
+
+	function match_color(text) {
+		var BG_COLOR_HEX_REGEXP = /^background-color: (\#[0-9A-F]{6})/i;
+		var BG_COLOR_TEXT_REGEXP = /^background-color: ([a-zA-Z]+)/i;
+		console.log(text);
+		var color_obj = BG_COLOR_HEX_REGEXP.exec(text);
+		if (color_obj) {
+			return color_obj[1];
+		}
+		console.log(color_obj);
+		var color_obj = BG_COLOR_TEXT_REGEXP.exec(text);
+		if (color_obj) {
+			return color_obj[1];
+		}
+		console.log(color_obj);
+		return null;
+	}
 
 	function coords(i, j) {
 		this.getText = function () {
@@ -21,9 +37,8 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 			elm = this.getDomElm();
 			if ( elm.hasAttribute("style")) {
 				var attr = elm.getAttribute("style");
-				var color_obj = BG_COLOR_REGEXP.exec(attr);
-				if (color_obj) {
-					var color = color_obj[1];
+				var color = match_color(attr);
+				if (color) {
 					if (color === hexcode) {
 						elm.setAttribute("style", "");
 						return;
@@ -131,8 +146,7 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 					// TODO: hacky, learn js and fix
 					if (attr != null && 
 					    attr != "") {
-						var color_obj = BG_COLOR_REGEXP.exec(attr);
-						var color = color_obj[1];
+						var color = match_color(attr);
 						table.add([i,j, color]);
 					}
 				}
@@ -162,6 +176,8 @@ var blocks = function (ROWS, COLUMNS, PALETTE) {
 				for (var i = 0; i < that.action_list.length; i++) {
 					var drawing = that.action_list[i].drawing;
 					var result = that.action_list[i].result;
+					console.log(drawing);
+					console.log(table_state);
 					if (drawing.matches(table_state)) {
 						result();
 					}
